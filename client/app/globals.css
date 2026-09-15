@@ -1,0 +1,239 @@
+@import "tailwindcss";
+
+:root {
+  --background: #000000;
+  --foreground: #ece4d2;
+  --gold: #d9a441;
+  --parchment: #ece4d2;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-gold: var(--gold);
+  --color-parchment: var(--parchment);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-cormorant);
+  --font-nasyhama: var(--font-nasyhama);
+  --font-taiganja: var(--font-taiganja);
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  /* Decorative halos and off-frame art must never widen the page. */
+  overflow-x: clip;
+  /* No rubber-band bounce at the ends, so fixed header/footer never drift. */
+  overscroll-behavior-y: none;
+}
+
+.font-display {
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.font-nasyhama {
+  font-family: var(--font-nasyhama), var(--font-cormorant), Georgia, serif;
+}
+
+.font-taiganja {
+  font-family: var(--font-taiganja), var(--font-cormorant), Georgia, serif;
+}
+
+/* Text panels: faint shadow lifts type off busy art without looking embossed. */
+.text-panel-shadow,
+.text-panel-shadow * {
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.7),
+    0 0 18px rgba(0, 0, 0, 0.55);
+}
+
+/* === Page transitions (View Transitions API) =================================
+   Old page: fades out + scales down slightly (cinematic receding feel).
+   New page: fades in + scales from 1.025 to 1 (atmospheric reveal).
+   Duration is deliberately slow -- the Eclecia aesthetic is cinematic.
+   Respects prefers-reduced-motion.
+   ============================================================================ */
+
+@keyframes vt-fade-out {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.97); }
+}
+
+@keyframes vt-fade-in {
+  from { opacity: 0; transform: scale(1.025); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Replace the browser default cross-fade with our dark dissolve. */
+::view-transition-old(root) {
+  animation: vt-fade-out 420ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+::view-transition-new(root) {
+  /* 80 ms delay lets the old page start receding before the new one rises. */
+  animation: vt-fade-in 550ms cubic-bezier(0, 0, 0.2, 1) 80ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
+
+/* ---- Date reveal effects ---- */
+
+/* Digits slide up as they change. */
+@keyframes tick-in {
+  from { opacity: 0; transform: translateY(0.35em); filter: blur(2px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+.tick-in { animation: tick-in 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+/* Slow breathing glow on the numbers, like the corona. */
+@keyframes glow-breathe {
+  0%, 100% { text-shadow: 0 0 10px rgba(217, 164, 65, 0.25), 0 0 32px rgba(217, 164, 65, 0.12); }
+  50% { text-shadow: 0 0 16px rgba(217, 164, 65, 0.55), 0 0 56px rgba(217, 164, 65, 0.28); }
+}
+.countdown-glow { animation: glow-breathe 3.6s ease-in-out infinite; }
+
+/* Colon separators pulse once a second, softly. */
+@keyframes sep-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.9; }
+}
+.countdown-sep { animation: sep-pulse 1s ease-in-out infinite; }
+
+/* A point of light travelling along a hairline. */
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+.shimmer-rule {
+  background: linear-gradient(
+    90deg,
+    rgba(217, 164, 65, 0) 0%,
+    rgba(217, 164, 65, 0.15) 35%,
+    rgba(236, 228, 210, 0.95) 50%,
+    rgba(217, 164, 65, 0.15) 65%,
+    rgba(217, 164, 65, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 4.5s linear infinite;
+}
+
+/* Hero scroll cue: chevron bobs down and settles. */
+@keyframes cue-bob {
+  0%, 100% { transform: translateY(0); opacity: 0.8; }
+  50% { transform: translateY(6px); opacity: 1; }
+}
+.scroll-cue-chevron { animation: cue-bob 1.8s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tick-in, .countdown-glow, .countdown-sep, .shimmer-rule, .scroll-cue-chevron { animation: none; }
+}
+
+/* ---- Unrevealed countdown: a signal fighting through the eclipse ---- */
+
+/* Two offset colour copies (gold / cold cyan) torn by moving clip slices. */
+.glitch {
+  position: relative;
+  animation: glitch-jitter 2.8s steps(1) infinite;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font: inherit;
+  letter-spacing: inherit;
+  white-space: nowrap;
+}
+.glitch::before {
+  color: rgba(217, 164, 65, 0.85);
+  transform: translate(-2px, 0);
+  clip-path: inset(0 0 55% 0);
+  animation: glitch-slice-a 1.9s steps(1) infinite;
+}
+.glitch::after {
+  color: rgba(120, 220, 230, 0.75);
+  transform: translate(2px, 0);
+  clip-path: inset(45% 0 0 0);
+  animation: glitch-slice-b 2.3s steps(1) infinite;
+  mix-blend-mode: screen;
+}
+@keyframes glitch-jitter {
+  0%, 86%, 100% { transform: none; filter: none; }
+  87% { transform: translate(1px, -1px) skewX(2deg); filter: brightness(1.4); }
+  89% { transform: translate(-2px, 1px); }
+  91% { transform: none; filter: none; }
+  94% { transform: translate(1px, 0) skewX(-1.5deg); }
+  95% { transform: none; }
+}
+@keyframes glitch-slice-a {
+  0% { clip-path: inset(0 0 62% 0); transform: translate(-1px, 0); }
+  18% { clip-path: inset(12% 0 40% 0); transform: translate(-3px, 0); }
+  33% { clip-path: inset(48% 0 20% 0); transform: translate(2px, 0); }
+  51% { clip-path: inset(5% 0 80% 0); transform: translate(-2px, 0); }
+  70% { clip-path: inset(70% 0 5% 0); transform: translate(3px, 0); }
+  86% { clip-path: inset(30% 0 45% 0); transform: translate(-1px, 0); }
+  100% { clip-path: inset(0 0 62% 0); transform: translate(-1px, 0); }
+}
+@keyframes glitch-slice-b {
+  0% { clip-path: inset(55% 0 0 0); transform: translate(2px, 0); }
+  21% { clip-path: inset(20% 0 55% 0); transform: translate(3px, 0); }
+  39% { clip-path: inset(75% 0 0 0); transform: translate(-2px, 0); }
+  58% { clip-path: inset(38% 0 30% 0); transform: translate(2px, 0); }
+  77% { clip-path: inset(8% 0 72% 0); transform: translate(-3px, 0); }
+  100% { clip-path: inset(55% 0 0 0); transform: translate(2px, 0); }
+}
+
+/* Faint drifting scanlines over the whole timer. */
+.glitch-field::after {
+  content: "";
+  position: absolute;
+  inset: -12px -24px;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(236, 228, 210, 0.05) 0px,
+    rgba(236, 228, 210, 0.05) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+  animation: scan-drift 6s linear infinite;
+}
+@keyframes scan-drift {
+  from { background-position: 0 0; }
+  to { background-position: 0 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glitch, .glitch::before, .glitch::after, .glitch-field::after { animation: none; }
+  .glitch::before, .glitch::after { display: none; }
+}
+
+/* ---- Gold CTA button ---- */
+.gold-btn {
+  filter: drop-shadow(0 0 14px rgba(217, 164, 65, 0.18));
+  transition: filter 300ms ease, transform 300ms ease;
+}
+.gold-btn:hover { filter: drop-shadow(0 0 22px rgba(217, 164, 65, 0.45)); }
+.gold-btn-sheen { opacity: 0; }
+.gold-btn:hover .gold-btn-sheen { animation: gold-btn-sweep 900ms ease-out forwards; }
+@keyframes gold-btn-sweep {
+  0% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(260px); opacity: 0; }
+}
+.gold-btn-finial { transition: transform 300ms ease; }
+.gold-btn:hover .gold-btn-finial:first-of-type { transform: translate(-80%, -50%) scale(1.1); }
+@media (prefers-reduced-motion: reduce) {
+  .gold-btn:hover .gold-btn-sheen { animation: none; }
+}

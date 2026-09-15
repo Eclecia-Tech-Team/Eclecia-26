@@ -1,0 +1,17 @@
+import type { Metadata } from "next";
+import { ComingSoon } from "../ComingSoon";
+
+export const metadata: Metadata = {
+  title: "Team · Eclecia'26",
+  description:
+    "Meet the organizing committee and student team behind Eclecia'26.",
+};
+
+export default function TeamPage() {
+  return (
+    <ComingSoon
+      eyebrow="The Team"
+      note="Meet the passionate organizers, leads, and student committee behind Eclecia'26."
+    />
+  );
+}
