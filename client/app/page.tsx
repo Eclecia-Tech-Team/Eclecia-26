@@ -164,6 +164,34 @@ const LAYERS: Layer[] = [
   },
 ];
 
+// ---------- viewport measurement ----------
+//
+// window.innerHeight (and its 'resize' event) is not a reliable proxy for
+// the *currently visible* viewport on mobile: iOS only ever collapses a
+// bottom toolbar, so innerHeight tracks it closely enough that nobody
+// notices the gap; Android can show/hide a top AND a bottom bar
+// independently, and 'resize' fires late or not at all during that
+// transition. Since the scroll-track's CSS height is `dvh` (which IS
+// spec'd to track the true dynamic viewport), reading a stale
+// window.innerHeight in JS quietly falls out of sync with what's actually
+// rendered — that's the "fine on iPhone, messed up on Android" symptom.
+// visualViewport.height is kept in sync with the real visible area on both
+// platforms and fires its own 'resize' event reliably, so every place that
+// needs "how tall is the viewport right now" reads from it instead.
+
+function getViewportH(): number {
+  if (typeof window === "undefined") return FRAME.height;
+  return window.visualViewport?.height ?? window.innerHeight;
+}
+function getViewportW(): number {
+  if (typeof window === "undefined") return FRAME.width;
+  return window.visualViewport?.width ?? window.innerWidth;
+}
+/** Extra scrollable px inside the pinned track for a given viewport height. */
+function trackPxFor(vh: number): number {
+  return cfg.scrollVh * vh - vh;
+}
+
 // ---------- scroll cue ----------
 
 /**
@@ -174,8 +202,11 @@ const LAYERS: Layer[] = [
 function ScrollCue({ opacity }: { opacity: number }) {
   const hidden = opacity < 0.01;
   const go = () => {
-    const trackPx = cfg.scrollVh * window.innerHeight - window.innerHeight;
-    window.scrollTo({ top: cfg.navTargets.dates * trackPx, behavior: "smooth" });
+    const trackPx = trackPxFor(getViewportH());
+    window.scrollTo({
+      top: cfg.navTargets.dates * trackPx,
+      behavior: "smooth",
+    });
   };
   return (
     <button
@@ -223,26 +254,37 @@ function useCover() {
   });
   useEffect(() => {
     const update = () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const w = getViewportW();
+      const h = getViewportH();
       setV({ scale: Math.max(w / FRAME.width, h / FRAME.height), w, h });
     };
     update();
     window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
+    window.addEventListener("orientationchange", update);
+    // The reliable signal for Android's independent top/bottom bar
+    // show/hide — window 'resize' alone can miss or lag this transition.
+    window.visualViewport?.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("orientationchange", update);
+      window.visualViewport?.removeEventListener("resize", update);
+    };
   }, []);
   return v;
 }
 
 // Layout tier: tablet (see cfg.tabletQuery) beats mobile (cfg.mobileQuery), else desktop.
 function subscribeMode(cb: () => void) {
-  const qs = [cfg.tabletQuery, cfg.tabletPortraitQuery, cfg.mobileQuery].map((q) => window.matchMedia(q));
+  const qs = [cfg.tabletQuery, cfg.tabletPortraitQuery, cfg.mobileQuery].map(
+    (q) => window.matchMedia(q),
+  );
   qs.forEach((q) => q.addEventListener("change", cb));
   return () => qs.forEach((q) => q.removeEventListener("change", cb));
 }
 function readMode(): Mode {
   if (window.matchMedia(cfg.tabletQuery).matches) return "tablet";
-  if (window.matchMedia(cfg.tabletPortraitQuery).matches) return "tabletPortrait";
+  if (window.matchMedia(cfg.tabletPortraitQuery).matches)
+    return "tabletPortrait";
   if (window.matchMedia(cfg.mobileQuery).matches) return "mobile";
   return "desktop";
 }
@@ -260,8 +302,7 @@ function useTrackProgress() {
     let current = 0;
     const k = cfg.scrollSmoothing;
     const readTarget = () => {
-      const vh = window.innerHeight;
-      const trackPx = cfg.scrollVh * vh - vh;
+      const trackPx = trackPxFor(getViewportH());
       target = trackPx > 0 ? clamp01(window.scrollY / trackPx) : 0;
     };
     const tick = () => {
@@ -284,9 +325,16 @@ function useTrackProgress() {
     schedule();
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
+    window.addEventListener("orientationchange", schedule);
+    // Android's top/bottom bars can resize the visible area without a
+    // window 'resize' firing in time — this keeps trackPx (and therefore
+    // `p`) from drifting out of sync with what's actually on screen.
+    window.visualViewport?.addEventListener("resize", schedule);
     return () => {
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
+      window.removeEventListener("orientationchange", schedule);
+      window.visualViewport?.removeEventListener("resize", schedule);
       if (raf) cancelAnimationFrame(raf);
     };
   }, []);
@@ -296,10 +344,14 @@ function useTrackProgress() {
 // Section anchors on the track: where each section rests (hold start; finale = 1).
 const ANCHORS = Object.values(cfg.layout).map((sec) => sec.hold[0]);
 
-const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const easeInOutCubic = (t: number) =>
+  t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
 // After the user stops scrolling, glide to the next section in their direction.
 // Programmatic scrolls are ignored by the listener; any new input cancels the glide.
+// (Desktop wheel / keyboard / trackpad — mobile touch is handled separately
+// by useMobileSectionSwipe, which owns the gesture directly instead of
+// waiting for it to go idle.)
 function useSectionSnap() {
   useEffect(() => {
     if (!cfg.snap.enabled) return;
@@ -309,8 +361,6 @@ function useSectionSnap() {
     let idle = 0;
     let anim = 0;
     let animating = false;
-
-    const trackPx = () => cfg.scrollVh * window.innerHeight - window.innerHeight;
 
     const cancel = () => {
       if (anim) cancelAnimationFrame(anim);
@@ -339,7 +389,7 @@ function useSectionSnap() {
     };
 
     const snap = () => {
-      const tp = trackPx();
+      const tp = trackPxFor(getViewportH());
       if (tp <= 0) return;
       const p = window.scrollY / tp;
       if (p >= 1) return; // past the pinned scene: leave the page alone
@@ -370,17 +420,137 @@ function useSectionSnap() {
 
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("wheel", onInput, { passive: true });
-    window.addEventListener("touchstart", onInput, { passive: true });
     window.addEventListener("keydown", onInput);
     return () => {
       clearTimeout(idle);
       cancel();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("wheel", onInput);
-      window.removeEventListener("touchstart", onInput);
       window.removeEventListener("keydown", onInput);
     };
   }, []);
+}
+
+// Mobile only: one swipe = exactly one section, then stop. Owns the touch
+// gesture directly (blocks native scrolling while dragging inside the
+// pinned track) instead of letting the finger glide through several
+// sections and correcting afterwards — which is what idle-based snapping
+// above does, and is the "it keeps going to the next section" complaint.
+// Steps aside once you're at the last section so a further swipe scrolls
+// normally into the footer.
+function useMobileSectionSwipe(active: boolean) {
+  useEffect(() => {
+    if (!active || !cfg.snap.enabled) return;
+    const S = cfg.snap;
+    const SWIPE_PX = 40; // minimum drag distance (px) to count as "advance one section"
+    const MOVE_EPSILON = 6; // px of wiggle before we decide vertical vs horizontal
+
+    let dragging = false;
+    let decided = false;
+    let vertical = false;
+    let startX = 0;
+    let startY = 0;
+    let startScrollY = 0;
+    let anim = 0;
+
+    const cancelAnim = () => {
+      if (anim) cancelAnimationFrame(anim);
+      anim = 0;
+    };
+
+    const glideTo = (targetY: number) => {
+      cancelAnim();
+      const start = window.scrollY;
+      const dist = Math.abs(targetY - start);
+      if (dist < 1) return;
+      const ms = Math.min(S.maxMs, Math.max(S.minMs, dist * 0.9));
+      const t0 = performance.now();
+      const step = (now: number) => {
+        const t = Math.min(1, (now - t0) / ms);
+        window.scrollTo(0, start + (targetY - start) * easeInOutCubic(t));
+        if (t < 1) anim = requestAnimationFrame(step);
+        else anim = 0;
+      };
+      anim = requestAnimationFrame(step);
+    };
+
+    const nearestIndex = (p: number) => {
+      let best = 0;
+      let bestDiff = Infinity;
+      ANCHORS.forEach((a, idx) => {
+        const diff = Math.abs(a - p);
+        if (diff < bestDiff) {
+          bestDiff = diff;
+          best = idx;
+        }
+      });
+      return best;
+    };
+
+    const onTouchStart = (e: TouchEvent) => {
+      const tp = trackPxFor(getViewportH());
+      // Already at/past the end of the pinned track: let native scrolling
+      // carry on into whatever follows (the footer).
+      if (tp <= 0 || window.scrollY >= tp - 2) return;
+      cancelAnim();
+      dragging = true;
+      decided = false;
+      vertical = false;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      startScrollY = window.scrollY;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!dragging) return;
+      const touch = e.touches[0];
+      if (!decided) {
+        const dx = touch.clientX - startX;
+        const dy = touch.clientY - startY;
+        if (Math.abs(dx) < MOVE_EPSILON && Math.abs(dy) < MOVE_EPSILON) return;
+        decided = true;
+        vertical = Math.abs(dy) > Math.abs(dx);
+        if (!vertical) {
+          // Horizontal gesture: not ours, let the browser handle it.
+          dragging = false;
+          return;
+        }
+      }
+      // Own the gesture: block native scroll so the page only ever moves
+      // via glideTo below, one section at a time.
+      e.preventDefault();
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (!dragging || !decided || !vertical) {
+        dragging = false;
+        return;
+      }
+      dragging = false;
+      const tp = trackPxFor(getViewportH());
+      if (tp <= 0) return;
+      const endY = e.changedTouches[0].clientY;
+      const deltaY = startY - endY; // positive = swiped up = wants to advance
+      const p0 = clamp01(startScrollY / tp);
+      const idx = nearestIndex(p0);
+      let targetIdx = idx;
+      if (deltaY > SWIPE_PX && idx < ANCHORS.length - 1) targetIdx = idx + 1;
+      else if (deltaY < -SWIPE_PX && idx > 0) targetIdx = idx - 1;
+      glideTo(ANCHORS[targetIdx] * tp);
+    };
+
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
+    return () => {
+      cancelAnim();
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchEnd);
+    };
+  }, [active]);
 }
 
 // ---------- choreography for the PNG layers ----------
@@ -391,7 +561,10 @@ type LayerStyle = { transform: string; opacity: number };
 function layerStyle(layer: Layer, p: number, mode: Mode): LayerStyle {
   const pose = poseAt(layer.asset, p, mode);
   // Portrait art only on phones; tablets keep the landscape composition.
-  const art = (mode === "mobile" || mode === "tabletPortrait") && layer.mobile ? layer.mobile : layer;
+  const art =
+    (mode === "mobile" || mode === "tabletPortrait") && layer.mobile
+      ? layer.mobile
+      : layer;
   const cx0 = layer.x + art.width / 2;
   const cy0 = layer.y + art.height / 2;
   const scale = pose.w / art.width;
@@ -407,6 +580,7 @@ export default function Home() {
   const mobile = mode !== "desktop"; // panels + compact type for both tablet and phone
   const p = useTrackProgress();
   useSectionSnap();
+  useMobileSectionSwipe(mode === "mobile");
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -446,7 +620,9 @@ export default function Home() {
       };
 
   // Tablets: phone markup, scaled up (see cfg.panelScaleMax). Phones: 1.
-  const panelScale = mobile ? Math.min(cfg.panelScaleMax, Math.max(1, Math.min(w / 520, h / 720))) : 1;
+  const panelScale = mobile
+    ? Math.min(cfg.panelScaleMax, Math.max(1, Math.min(w / 520, h / 720)))
+    : 1;
 
   type Frac = { x: number; y: number; w: number };
   type TextOverrides = Partial<Record<keyof typeof cfg.textMobile, Frac>>;
@@ -500,7 +676,10 @@ export default function Home() {
         bounds={bounds}
         compact={mobile}
         // Tablets: enlarge heading and paragraph for better readability in tablet view
-        scale={panelScale * (mode === "tablet" || mode === "tabletPortrait" ? 1.35 : 1)}
+        scale={
+          panelScale *
+          (mode === "tablet" || mode === "tabletPortrait" ? 1.35 : 1)
+        }
       />
       <FinaleSection
         opacity={finaleO}
@@ -509,7 +688,10 @@ export default function Home() {
         bounds={bounds}
         compact={mobile}
         // Tablets: closing line + CTA get an extra bump; the sky above the hills is empty anyway.
-        scale={panelScale * (mode === "tablet" || mode === "tabletPortrait" ? 1.35 : 1)}
+        scale={
+          panelScale *
+          (mode === "tablet" || mode === "tabletPortrait" ? 1.35 : 1)
+        }
       />
     </>
   );
@@ -518,13 +700,21 @@ export default function Home() {
     <>
       {/* Pinned scroll track: gives the scene its scroll length. */}
       {/* dvh so iOS's collapsing address bar doesn't change the track mid-scroll */}
-      <div className="scroll-track" style={{ height: `${cfg.scrollVh * 100}dvh` }} aria-hidden />
+      <div
+        className="scroll-track"
+        style={{ height: `${cfg.scrollVh * 100}dvh` }}
+        aria-hidden
+      />
 
       {/* Always-on backing: a tiny blurred sky so the first paint is never plain black */}
       <div
         aria-hidden
         className="fixed inset-0 bg-black"
-        style={{ backgroundImage: `url(${SKY_LQIP})`, backgroundSize: "cover", backgroundPosition: "center" }}
+        style={{
+          backgroundImage: `url(${SKY_LQIP})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
       />
 
       {/* Fixed scene with smooth initial entrance fade */}
@@ -543,7 +733,10 @@ export default function Home() {
         >
           {LAYERS.map((layer) => {
             const s = layerStyle(layer, p, mode);
-            const art = (mode === "mobile" || mode === "tabletPortrait") && layer.mobile ? layer.mobile : layer;
+            const art =
+              (mode === "mobile" || mode === "tabletPortrait") && layer.mobile
+                ? layer.mobile
+                : layer;
             return (
               <img
                 key={layer.id}
@@ -574,7 +767,11 @@ export default function Home() {
           })}
 
           {/* Desktop: panels share the frame's coordinates and sit on z-80 above the moon */}
-          {!mobile && <div className="absolute inset-0 z-80 pointer-events-none">{panels}</div>}
+          {!mobile && (
+            <div className="absolute inset-0 z-80 pointer-events-none">
+              {panels}
+            </div>
+          )}
         </div>
 
         {/* Mobile: panels in a viewport layer above the scene so they always fit the screen */}
