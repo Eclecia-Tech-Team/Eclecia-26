@@ -35,7 +35,9 @@ const taiganja = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL!),
+  metadataBase: process.env.NEXT_PUBLIC_SITE_URL
+    ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
+    : null,
   title: {
     default: "Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology",
     template: "%s",
@@ -93,7 +95,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology",
     description:
-      "The annual cultural fest of Heritage Institute of Technology, Kolkata.",
+      "The annual cultural fest of Heritage Institute of Technology, Kolkata. 30 & 31 October and 1 November 2026.",
     images: [ASSETS.cloudinary.ogImage],
   },
   robots: {
@@ -115,7 +117,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const { eventJsonLd, websiteJsonLd, organizationJsonLd } = getStructuredData(
-    process.env.NEXT_PUBLIC_SITE_URL!
+    process.env.NEXT_PUBLIC_SITE_URL
   );
 
   return (
