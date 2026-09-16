@@ -204,7 +204,7 @@ function ScrollCue({ opacity }: { opacity: number }) {
   const go = () => {
     const trackPx = trackPxFor(getViewportH());
     window.scrollTo({
-      top: cfg.navTargets.dates * trackPx,
+      top: cfg.layout.dates.hold[0] * trackPx,
       behavior: "smooth",
     });
   };
