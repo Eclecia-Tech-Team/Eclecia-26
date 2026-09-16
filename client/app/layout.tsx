@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     template: "%s",
   },
   description:
-    "Welcome to Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology, Kolkata. 30 & 31 October and 1 November 2026. Music, Dance, Drama, Art, Fashion and Literary events across 40+ colleges. Uniting talent, igniting culture.",
+    "Welcome to Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology, Kolkata. Music, Dance, Drama, Art, Fashion and Literary events across 40+ colleges. Uniting talent, igniting culture.",
   keywords: SEO_KEYWORDS,
   authors: [{ name: "Heritage Institute of Technology, Kolkata" }],
   creator: "Eclecia Tech Team",
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology",
     description:
-      "Welcome to Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology, Kolkata. 30 & 31 October and 1 November 2026. Music, Dance, Drama, Art, Fashion and Literary events across 40+ colleges. Uniting talent, igniting culture.",
+      "Welcome to Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology, Kolkata. Music, Dance, Drama, Art, Fashion and Literary events across 40+ colleges. Uniting talent, igniting culture.",
     url: "/",
     siteName: "Eclecia'26",
     images: [
@@ -93,7 +93,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology",
     description:
-      "The annual cultural fest of Heritage Institute of Technology, Kolkata. 30 & 31 October and 1 November 2026. Music, dance, drama, art, fashion and literary events across 40+ colleges.",
+      "The annual cultural fest of Heritage Institute of Technology, Kolkata.",
     images: [ASSETS.cloudinary.ogImage],
   },
   robots: {

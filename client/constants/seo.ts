@@ -63,19 +63,22 @@ export const SEO_KEYWORDS = [
   "Heritage Institute of Technology Kolkata",
   "MAKAUT college fest",
   "Eastern India college cultural festival",
-  "October 2026 fest Kolkata",
+  // "October 2026 fest Kolkata",
 ];
 
-export function getStructuredData(siteUrl: string) {
+export function getStructuredData(siteUrl: string = "") {
+  const cleanSiteUrl = siteUrl ? siteUrl.replace(/\/+$/, "") : "";
+  const ogImageUrl = ASSETS.cloudinary.ogImage.startsWith("http")
+    ? ASSETS.cloudinary.ogImage
+    : cleanSiteUrl
+      ? `${cleanSiteUrl}${ASSETS.cloudinary.ogImage.startsWith("/") ? "" : "/"}${ASSETS.cloudinary.ogImage}`
+      : ASSETS.cloudinary.ogImage;
+
   const eventJsonLd = {
     "@context": "https://schema.org",
     "@type": ["Festival", "Event"],
     name: "Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology",
     alternateName: ECLECIA_ALIASES,
-    // startDate: "2026-10-30T10:00:00+05:30",
-    // endDate: "2026-11-01T22:00:00+05:30",
-    // eventStatus: "https://schema.org/EventScheduled",
-    // eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     location: {
       "@type": "Place",
       name: "Heritage Institute of Technology, Kolkata",
@@ -103,15 +106,15 @@ export function getStructuredData(siteUrl: string) {
     description:
       "Welcome to Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology, Kolkata. 3 days of music, dance, drama, art, fashion, and literary events across 40+ colleges. Uniting talent, igniting culture.",
     image: [
-      `${siteUrl}${ASSETS.cloudinary.ogImage}`,
+      ogImageUrl,
       ASSETS.cloudinary.mainart,
       ASSETS.cloudinary.wordmarkBlacker,
     ],
-    url: siteUrl,
+    url: cleanSiteUrl || undefined,
     inLanguage: "en-IN",
     offers: {
       "@type": "Offer",
-      url: `${siteUrl}/register`,
+      url: cleanSiteUrl ? `${cleanSiteUrl}/register` : "/register",
       availability: "https://schema.org/InStock",
       price: "0",
       priceCurrency: "INR",
@@ -122,7 +125,7 @@ export function getStructuredData(siteUrl: string) {
   const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    url: siteUrl,
+    url: cleanSiteUrl || undefined,
     name: "Eclecia'26",
     alternateName: ECLECIA_ALIASES,
     description:
