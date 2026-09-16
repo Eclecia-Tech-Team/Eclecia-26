@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Eclecia'26 - Heritage Institute of Technology",
     short_name: "Eclecia'26",
     description:
-      "The Annual Cultural Fest of Heritage Institute of Technology, Kolkata. 30 & 31 October and 1 November 2026.",
+      "The Annual Cultural Fest of Heritage Institute of Technology, Kolkata.",
     start_url: "/",
     display: "standalone",
     background_color: "#000000",
