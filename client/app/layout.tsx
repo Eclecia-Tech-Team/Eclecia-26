@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "@/styles/globals.css";
 import { ASSETS } from "@/constants/assets";
+import { SEO_KEYWORDS, getStructuredData } from "@/constants/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,15 +36,46 @@ const taiganja = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL!),
-  title:
-    "Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology",
+  title: {
+    default: "Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology",
+    template: "%s",
+  },
   description:
-    "Welcme to Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology, Kolkata. Music, Dance, Drama, Art, Fashion and Literary events across 3 days and 40+ colleges. Create. Celbrate. Inspire.",
+    "Welcome to Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology, Kolkata. 30 & 31 October and 1 November 2026. Music, Dance, Drama, Art, Fashion and Literary events across 40+ colleges. Uniting talent, igniting culture.",
+  keywords: SEO_KEYWORDS,
+  authors: [{ name: "Heritage Institute of Technology, Kolkata" }],
+  creator: "Eclecia Tech Team",
+  publisher: "Heritage Institute of Technology, Kolkata",
+  formatDetection: {
+    email: true,
+    address: true,
+    telephone: true,
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icons/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icons/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    other: [
+      {
+        rel: "android-chrome-192x192",
+        url: "/icons/android-chrome-192x192.png",
+      },
+      {
+        rel: "android-chrome-512x512",
+        url: "/icons/android-chrome-512x512.png",
+      },
+    ],
+  },
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title:
-      "Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology",
+    title: "Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology",
     description:
-      "Welcme to Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology, Kolkata. Music, Dance, Drama, Art, Fashion and Literary events across 3 days and 40+ colleges. Create. Celbrate. Inspire.",
+      "Welcome to Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology, Kolkata. 30 & 31 October and 1 November 2026. Music, Dance, Drama, Art, Fashion and Literary events across 40+ colleges. Uniting talent, igniting culture.",
     url: "/",
     siteName: "Eclecia'26",
     images: [
@@ -51,7 +83,7 @@ export const metadata: Metadata = {
         url: ASSETS.cloudinary.ogImage,
         width: 1200,
         height: 630,
-        alt: "Eclecia'26: Heritage Institute of Technology",
+        alt: "Eclecia'26 - Heritage Institute of Technology",
       },
     ],
     locale: "en_US",
@@ -59,11 +91,21 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title:
-      "Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology",
+    title: "Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology",
     description:
-      "The annual cultural fest of Heritage Institute of Technology, Kolkata. 30 & 31 October and 1 November 2026.",
+      "The annual cultural fest of Heritage Institute of Technology, Kolkata. 30 & 31 October and 1 November 2026. Music, dance, drama, art, fashion and literary events across 40+ colleges.",
     images: [ASSETS.cloudinary.ogImage],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
@@ -72,12 +114,30 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const { eventJsonLd, websiteJsonLd, organizationJsonLd } = getStructuredData(
+    process.env.NEXT_PUBLIC_SITE_URL!
+  );
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${nasyhama.variable} ${taiganja.variable} h-full antialiased`}
     >
       <head>
+        {/* JSON-LD Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(eventJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+
         {/* Hero layers first: they are the LCP; everything else streams behind them. */}
         <link
           rel="preload"
