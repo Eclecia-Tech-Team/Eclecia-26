@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import SponsorsView from "./SponsorsView";
+import { SponsorsView } from "@/components/sponsors/SponsorsView";
 
 export const metadata: Metadata = {
   title: "Sponsors: Eclecia'26",

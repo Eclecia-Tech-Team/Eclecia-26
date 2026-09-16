@@ -4,13 +4,19 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-interface TransitionLinkProps extends React.ComponentProps<typeof Link> {
+export interface TransitionLinkProps extends React.ComponentProps<typeof Link> {
   href: string;
   children: React.ReactNode;
   className?: string;
 }
 
-export function TransitionLink({ href, children, className, onClick, ...props }: TransitionLinkProps) {
+export function TransitionLink({
+  href,
+  children,
+  className,
+  onClick,
+  ...props
+}: TransitionLinkProps) {
   const router = useRouter();
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -25,7 +31,9 @@ export function TransitionLink({ href, children, className, onClick, ...props }:
 
     e.preventDefault();
 
-    const doc = document as Document & { startViewTransition?: (cb: () => void) => unknown };
+    const doc = document as Document & {
+      startViewTransition?: (cb: () => void) => unknown;
+    };
     if (typeof doc.startViewTransition === "function") {
       doc.startViewTransition(() => {
         router.push(href);

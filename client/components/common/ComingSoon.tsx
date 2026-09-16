@@ -2,15 +2,21 @@ import { TransitionLink } from "./TransitionLink";
 import { SiteHeader } from "./Header";
 import { SiteFooter } from "./Footer";
 import { PageFade } from "./PageFade";
+import { ASSETS } from "@/constants/assets";
+
+export interface ComingSoonProps {
+  eyebrow: string;
+  note?: string;
+}
 
 /** Full-viewport placeholder used by pages that aren't live yet. */
-export function ComingSoon({ eyebrow, note }: { eyebrow: string; note?: string }) {
+export function ComingSoon({ eyebrow, note }: ComingSoonProps) {
   return (
     <PageFade className="min-h-dvh">
       <div className="relative min-h-dvh flex flex-col justify-between overflow-hidden bg-black text-parchment">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/assets/opt/bg-layer1.webp"
+          src={ASSETS.cloudinary.bg}
           alt=""
           aria-hidden
           className="pointer-events-none fixed inset-0 h-full w-full object-cover opacity-60"
@@ -26,7 +32,7 @@ export function ComingSoon({ eyebrow, note }: { eyebrow: string; note?: string }
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/assets/opt/comingsoon.webp"
+            src={ASSETS.cloudinary.comingsoon}
             alt="Coming soon"
             draggable={false}
             className="w-[min(92vw,1040px)] max-w-none select-none md:w-[min(78vw,1040px)]"

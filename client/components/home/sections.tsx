@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { sceneConfig as cfg } from "./scene.config";
-import { GoldButton } from "./GoldButton";
+import { sceneConfig as cfg } from "@/constants/scene.config";
+import { GoldButton } from "@/components/common/GoldButton";
+import { ASSETS } from "@/constants/assets";
 
 export type Emerge = {
   /** 0..1 progress of the slide-out from behind the moon. */
@@ -135,7 +136,7 @@ function Ornament({ compact = false }: { compact?: boolean }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/assets/opt/divider.webp"
+      src={ASSETS.cloudinary.divider}
       alt=""
       draggable={false}
       className={`pointer-events-none max-w-none select-none ${compact ? "-my-6 w-70" : "-my-9 w-130"}`}
@@ -161,7 +162,7 @@ function Title({
   );
 }
 
-type SectionProps = {
+export type SectionProps = {
   opacity: number;
   emerge: Emerge;
   rect: Rect;
@@ -214,7 +215,7 @@ export function HeroSection({ opacity, emerge, rect, bounds, compact, scale }: S
           )}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/assets/src/logo/eclecia-wordmark-blacker.png"
+            src={ASSETS.cloudinary.wordmarkBlacker}
             alt="ECLECIA"
             draggable={false}
             className={`relative select-none object-contain ${

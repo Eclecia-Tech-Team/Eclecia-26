@@ -4,23 +4,16 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { TransitionLink } from "./TransitionLink";
 import { GoldButton } from "./GoldButton";
+import { NAV_ITEMS, SOCIAL_LINKS } from "@/constants/navigation";
+import { ASSETS } from "@/constants/assets";
 
-type Props = {
+export type SiteHeaderProps = {
   /** 0..1; landing fades it in with scroll. */
   opacity?: number;
 };
 
-const NAV_ITEMS = [
-  { label: "Home", href: "/" },
-  { label: "Events", href: "/events" },
-  { label: "Schedule", href: "/schedule" },
-  { label: "Our Tale", href: "/our-tale" },
-  { label: "Sponsors", href: "/sponsors" },
-  { label: "Team", href: "/team" },
-];
-
 /** Shared responsive site header with 3 partner logos and 6 main nav items. */
-export function SiteHeader({ opacity = 1 }: Props) {
+export function SiteHeader({ opacity = 1 }: SiteHeaderProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -64,9 +57,9 @@ export function SiteHeader({ opacity = 1 }: Props) {
         />
         {/* Left Side: 3 Integrated Logos (Shifted left, no hover scale) */}
         <div className="flex items-center gap-2.5 sm:gap-3 md:gap-4 pl-1 md:pl-2">
-          {/* HITK Logo -> redirects to https://heritageit.edu/ */}
+          {/* HITK Logo -> redirects to official website */}
           <a
-            href="https://heritageit.edu/"
+            href={SOCIAL_LINKS.websiteHitk}
             target="_blank"
             rel="noopener noreferrer"
             title="Heritage Institute of Technology, Kolkata"
@@ -74,7 +67,7 @@ export function SiteHeader({ opacity = 1 }: Props) {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/assets/src/logo/hitk-logo.png"
+              src={ASSETS.cloudinary.hitkLogo}
               alt="HITK Logo"
               className="h-9 w-auto max-w-12 object-contain md:h-12 md:max-w-16"
             />
@@ -86,7 +79,7 @@ export function SiteHeader({ opacity = 1 }: Props) {
           <TransitionLink href="/" className="flex items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/assets/src/logo/eclecia-logo.png"
+              src={ASSETS.cloudinary.ecleciaLogo}
               alt="Eclecia Logo"
               className="h-10.5 w-auto max-w-13 object-contain md:h-13.5 md:max-w-16"
             />
@@ -98,7 +91,7 @@ export function SiteHeader({ opacity = 1 }: Props) {
           <TransitionLink href="/" className="flex items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/assets/src/logo/iic-logo.png"
+              src={ASSETS.cloudinary.iicLogo}
               alt="IIC Logo"
               className="h-7.5 w-auto max-w-24 object-contain opacity-90 sm:h-8.5 sm:max-w-28 md:h-11 md:max-w-40"
             />
@@ -126,7 +119,7 @@ export function SiteHeader({ opacity = 1 }: Props) {
           })}
         </nav>
 
-        {/* Right Side: Elevated "Join Us" Button (Desktop only: lg:) & Custom Animated Hamburger */}
+        {/* Right Side: Elevated "Join Us" Button (Desktop only: xl:) & Custom Animated Hamburger */}
         <div className="flex items-center gap-3 pr-1 md:pr-2">
           {/* Desktop only; the drawer carries its own Join Us on mobile */}
           <div className="hidden xl:block">
@@ -177,7 +170,9 @@ export function SiteHeader({ opacity = 1 }: Props) {
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={`py-3.5 px-2 font-taiganja font-normal text-[15px] sm:text-[17px] uppercase tracking-[0.25em] transition-colors ${
-                  isActive ? "text-gold font-semibold" : "text-parchment/80 hover:text-gold"
+                  isActive
+                    ? "text-gold font-semibold"
+                    : "text-parchment/80 hover:text-gold"
                 }`}
               >
                 {item.label}
@@ -188,7 +183,12 @@ export function SiteHeader({ opacity = 1 }: Props) {
 
         {/* Join Us CTA Button (Matching desktop button styling) */}
         <div className="mt-8 flex justify-center">
-          <GoldButton href="/register" variant="solid" size="md" onClick={() => setMobileMenuOpen(false)}>
+          <GoldButton
+            href="/register"
+            variant="solid"
+            size="md"
+            onClick={() => setMobileMenuOpen(false)}
+          >
             Join Us
           </GoldButton>
         </div>

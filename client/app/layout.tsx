@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
-import "./globals.css";
+import "@/styles/globals.css";
+import { ASSETS } from "@/constants/assets";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,9 +34,37 @@ const taiganja = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL!),
+  title:
+    "Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology",
   description:
-    "The annual cultural fest of Heritage Institute of Technology, Kolkata. 30 & 31 October and 1 November 2026. Music, dance, drama, art, fashion and literary events across 40+ colleges.",
+    "Welcme to Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology, Kolkata. Music, Dance, Drama, Art, Fashion and Literary events across 3 days and 40+ colleges. Create. Celbrate. Inspire.",
+  openGraph: {
+    title:
+      "Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology",
+    description:
+      "Welcme to Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology, Kolkata. Music, Dance, Drama, Art, Fashion and Literary events across 3 days and 40+ colleges. Create. Celbrate. Inspire.",
+    url: "/",
+    siteName: "Eclecia'26",
+    images: [
+      {
+        url: ASSETS.cloudinary.ogImage,
+        width: 1200,
+        height: 630,
+        alt: "Eclecia'26: Heritage Institute of Technology",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title:
+      "Eclecia'26: The Annual Cultural Fest of Heritage Institute of Technology",
+    description:
+      "The annual cultural fest of Heritage Institute of Technology, Kolkata. 30 & 31 October and 1 November 2026.",
+    images: [ASSETS.cloudinary.ogImage],
+  },
 };
 
 export default function RootLayout({
@@ -53,24 +82,24 @@ export default function RootLayout({
         <link
           rel="preload"
           as="image"
-          href="/assets/opt/bg-layer1.webp"
+          href={ASSETS.cloudinary.bg}
           fetchPriority="high"
         />
         <link
           rel="preload"
           as="image"
-          href="/assets/opt/mainart-layer6.webp"
+          href={ASSETS.cloudinary.mainart}
           fetchPriority="high"
         />
         <link
           rel="preload"
           as="image"
-          href="/assets/opt/suncoverbg-layer5.webp"
+          href={ASSETS.cloudinary.suncover}
         />
         <link
           rel="preload"
           as="image"
-          href="/assets/opt/blacksun2-layer3.webp"
+          href={ASSETS.cloudinary.blacksun2}
         />
       </head>
       <body className="min-h-full flex flex-col">{children}</body>

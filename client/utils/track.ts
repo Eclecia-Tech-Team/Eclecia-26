@@ -3,7 +3,7 @@ import {
   type AssetId,
   type Pose,
   type SectionLayout,
-} from "./scene.config";
+} from "@/constants/scene.config";
 
 export const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 /** Normalised progress of p within [a, b]. */

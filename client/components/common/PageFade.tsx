@@ -1,12 +1,17 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+
+export interface PageFadeProps {
+  children: ReactNode;
+  className?: string;
+}
 
 /**
  * Wraps children in a container that fades from opacity-0 to opacity-100
  * on first mount. Gives every page a smooth entrance instead of a jarring pop-in.
  */
-export function PageFade({ children, className = "" }: { children: ReactNode; className?: string }) {
+export function PageFade({ children, className = "" }: PageFadeProps) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -18,7 +23,9 @@ export function PageFade({ children, className = "" }: { children: ReactNode; cl
 
   return (
     <div
-      className={`transition-opacity duration-700 ease-out ${visible ? "opacity-100" : "opacity-0"} ${className}`}
+      className={`transition-opacity duration-700 ease-out ${
+        visible ? "opacity-100" : "opacity-0"
+      } ${className}`}
     >
       {children}
     </div>

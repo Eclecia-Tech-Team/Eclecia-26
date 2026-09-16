@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "../ComingSoon";
+import { ComingSoon } from "@/components/common/ComingSoon";
 
 export const metadata: Metadata = {
   title: "Register for Eclecia'26",

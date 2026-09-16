@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "../ComingSoon";
+import { ComingSoon } from "@/components/common/ComingSoon";
 
 export const metadata: Metadata = {
-  title: "Team · Eclecia'26",
+  title: "Team: Eclecia'26",
   description:
     "Meet the organizing committee and student team behind Eclecia'26.",
 };

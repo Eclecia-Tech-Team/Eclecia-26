@@ -6,10 +6,15 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
-import { sceneConfig as cfg } from "../scene.config";
-import { SiteFooter, SPONSORSHIP_HEADS as HEADS, TEAM_MAILTO } from "../Footer";
-import { SiteHeader } from "../Header";
-import { PageFade } from "../PageFade";
+import { sceneConfig as cfg } from "@/constants/scene.config";
+import {
+  SiteFooter,
+  SPONSORSHIP_HEADS as HEADS,
+  TEAM_MAILTO,
+} from "@/components/common/Footer";
+import { SiteHeader } from "@/components/common/Header";
+import { PageFade } from "@/components/common/PageFade";
+import { ASSETS } from "@/constants/assets";
 
 const FRAME = cfg.frame;
 const DESK = cfg.layout[cfg.sponsorsPoseFrom]; // eclipse sits where the left-moon section puts it
@@ -102,8 +107,6 @@ function poseTransform(
 const REACH = [
   { value: "200,000+", label: "Social media reach" },
   { value: "5,000+", label: "Students involved" },
-  // { value: "15+", label: "Cities across India" },
-  // { value: "10,000+", label: "Previous edition attendance" },
 ];
 
 const HITK = [
@@ -133,9 +136,6 @@ const HITK_PILLARS = [
   ],
 ];
 
-// TODO(content): drop the real PDF at public/eclecia-26-brochure.pdf
-const BROCHURE_HREF = "/eclecia-26-brochure.pdf";
-
 // ---------- small pieces ----------
 
 function Eyebrow({ children }: { children: ReactNode }) {
@@ -150,7 +150,7 @@ function Divider() {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/assets/opt/divider.webp"
+      src={ASSETS.cloudinary.divider}
       alt=""
       draggable={false}
       className="pointer-events-none -my-7 w-70 max-w-none select-none md:-my-9 md:w-105"
@@ -199,7 +199,7 @@ function Stat({ value, label }: { value: string; label: string }) {
 
 // ---------- page ----------
 
-export default function SponsorsView() {
+export function SponsorsView() {
   const { scale, w, h } = useCover();
   const mobile = useMobile();
   const scrollY = useScrollY();
@@ -234,13 +234,13 @@ export default function SponsorsView() {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/assets/opt/bg-layer1.webp"
+              src={ASSETS.cloudinary.bg}
               alt=""
               className="absolute left-0 top-0 h-216 w-378 max-w-none"
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/assets/opt/blacksun-layer2.webp"
+              src={ASSETS.cloudinary.blacksun}
               alt=""
               className="absolute max-w-none"
               style={{
@@ -253,7 +253,7 @@ export default function SponsorsView() {
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/assets/opt/blacksun2-layer3.webp"
+              src={ASSETS.cloudinary.blacksun2}
               alt=""
               className="absolute max-w-none will-change-transform"
               style={{
@@ -336,7 +336,9 @@ export default function SponsorsView() {
 
             <div className="flex flex-wrap items-center gap-4">
               <a
-                href={BROCHURE_HREF}
+                href={ASSETS.cloudinary.brochure}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="rounded-full bg-gold px-7 py-3 font-mono text-[11px] uppercase tracking-[0.35em] text-black transition-colors hover:bg-parchment"
               >
                 Download brochure
@@ -427,3 +429,5 @@ export default function SponsorsView() {
     </PageFade>
   );
 }
+
+export default SponsorsView;

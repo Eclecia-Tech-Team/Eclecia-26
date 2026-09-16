@@ -2,18 +2,26 @@
 
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { sceneConfig as cfg, type AssetId } from "./scene.config";
-import { clamp01, easeInOut, poseAt, sectionOpacity, seg, type Mode } from "./track";
+import { sceneConfig as cfg, type AssetId } from "@/constants/scene.config";
+import {
+  clamp01,
+  easeInOut,
+  poseAt,
+  sectionOpacity,
+  seg,
+  type Mode,
+} from "@/utils/track";
 import {
   HeroSection,
   StatsSection,
   DatesSection,
   DuskSection,
   FinaleSection,
-} from "./sections";
-import { SiteHeader } from "./Header";
-import { SiteFooter } from "./Footer";
-import { SKY_LQIP } from "./lqip";
+} from "@/components/home/sections";
+import { SiteHeader } from "@/components/common/Header";
+import { SiteFooter } from "@/components/common/Footer";
+import { SKY_LQIP } from "@/lib/lqip";
+import { ASSETS } from "@/constants/assets";
 
 const FRAME = cfg.frame;
 
@@ -33,14 +41,14 @@ type Layer = {
   mobile?: { src: string; width: number; height: number };
 };
 
-// Layer order and geometry come from the Figma export (assets-src/reference.svg).
-// Sources are WebP re-encodes of the Figma PNGs (see scripts/optimize-assets.mjs).
+// Layer order and geometry come from the Figma export.
+// Sources are served from ASSETS.cloudinary constants.
 // Array order = paint order (bottom → top).
 const LAYERS: Layer[] = [
   {
     asset: "bg",
     id: "bg-layer1",
-    src: "/assets/opt/bg-layer1.webp",
+    src: ASSETS.cloudinary.bg,
     x: 0,
     y: 0,
     width: 1512,
@@ -51,7 +59,7 @@ const LAYERS: Layer[] = [
   {
     asset: "veena",
     id: "orn-veena",
-    src: "/assets/opt/veena.webp",
+    src: ASSETS.cloudinary.veena,
     x: 0,
     y: 0,
     width: 1400,
@@ -61,7 +69,7 @@ const LAYERS: Layer[] = [
   {
     asset: "hand",
     id: "orn-hand",
-    src: "/assets/opt/hand.webp",
+    src: ASSETS.cloudinary.hand,
     x: 0,
     y: 0,
     width: 800,
@@ -71,7 +79,7 @@ const LAYERS: Layer[] = [
   {
     asset: "bannerL",
     id: "orn-banner-l",
-    src: "/assets/opt/banner.webp",
+    src: ASSETS.cloudinary.banner,
     x: 0,
     y: 0,
     width: 700,
@@ -81,7 +89,7 @@ const LAYERS: Layer[] = [
   {
     asset: "bannerR",
     id: "orn-banner-r",
-    src: "/assets/opt/banner.webp",
+    src: ASSETS.cloudinary.banner,
     x: 0,
     y: 0,
     width: 700,
@@ -91,7 +99,7 @@ const LAYERS: Layer[] = [
   {
     asset: "rays",
     id: "blacksun-layer2",
-    src: "/assets/opt/blacksun-layer2.webp",
+    src: ASSETS.cloudinary.blacksun,
     x: 558,
     y: 38,
     width: 432,
@@ -101,7 +109,7 @@ const LAYERS: Layer[] = [
   {
     asset: "moon",
     id: "blacksun2-layer3",
-    src: "/assets/opt/blacksun2-layer3.webp",
+    src: ASSETS.cloudinary.blacksun2,
     x: 555,
     y: 33,
     width: 437,
@@ -111,7 +119,7 @@ const LAYERS: Layer[] = [
   {
     asset: "minisun",
     id: "minisun-layer4",
-    src: "/assets/opt/minisun-layer4.webp",
+    src: ASSETS.cloudinary.minisun,
     x: 707,
     y: 186,
     width: 133,
@@ -121,7 +129,7 @@ const LAYERS: Layer[] = [
   {
     asset: "suncover",
     id: "suncoverbg-layer5",
-    src: "/assets/opt/suncoverbg-layer5.webp",
+    src: ASSETS.cloudinary.suncover,
     x: -165,
     y: -122,
     width: 1672,
@@ -131,7 +139,7 @@ const LAYERS: Layer[] = [
   {
     asset: "mainart",
     id: "mainart-layer6",
-    src: "/assets/opt/mainart-layer6.webp",
+    src: ASSETS.cloudinary.mainart,
     x: -160,
     y: -39,
     width: 1672,
@@ -139,7 +147,7 @@ const LAYERS: Layer[] = [
     z: 60,
     // Portrait re-composition of the hero art for phones.
     mobile: {
-      src: "/assets/opt/mainart-mobile.webp",
+      src: ASSETS.cloudinary.mainartMobile,
       width: 941,
       height: 1672,
     },
@@ -147,7 +155,7 @@ const LAYERS: Layer[] = [
   {
     asset: "bottom",
     id: "bottom-layer7",
-    src: "/assets/opt/bottom.webp",
+    src: ASSETS.cloudinary.bottom,
     x: -160,
     y: -39,
     width: 1672,

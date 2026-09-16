@@ -1,38 +1,25 @@
-export const SPONSORSHIP_HEADS = [
-  {
-    initials: "DP",
-    name: "Dipanjan Pal",
-    role: "Sponsorship Head",
-    email: "dipanjan.pal.ece27@heritageit.edu.in",
-    phone: "+91 89277 34731",
-  },
-  {
-    initials: "SR",
-    name: "Sayandeep Roy",
-    role: "Sponsorship Head",
-    email: "sayandeep.roy.bt27@heritageit.edu.in",
-    phone: "+91 82405 39282",
-  },
-];
+import {
+  SPONSORSHIP_HEADS,
+  TEAM_MAILTO,
+  SOCIAL_LINKS,
+} from "@/constants/navigation";
 
-export const TEAM_MAILTO = `mailto:${[...SPONSORSHIP_HEADS.map((h) => h.email), "eclecia@heritageit.edu"].join(",")}?subject=${encodeURIComponent(
-  "Eclecia'26 · Sponsorship Enquiry",
-)}`;
+export { SPONSORSHIP_HEADS, TEAM_MAILTO };
 
 const SOCIALS = [
   {
     name: "Instagram",
-    href: "https://www.instagram.com/eclecia_hitk",
+    href: SOCIAL_LINKS.instagram,
     icon: InstagramIcon,
   },
   {
     name: "LinkedIn",
-    href: "https://www.linkedin.com/in/eclecia-hitk-552642434",
+    href: SOCIAL_LINKS.linkedin,
     icon: LinkedInIcon,
   },
   {
     name: "Facebook",
-    href: "https://www.facebook.com/profile.php?id=61594092935345&sk=photos",
+    href: SOCIAL_LINKS.facebook,
     icon: FacebookIcon,
   },
 ];
@@ -93,18 +80,18 @@ export function SiteFooter({ className = "" }: { className?: string }) {
         </span>
         <span className="text-gold/30">·</span>
         <a
-          href="mailto:eclecia@heritageit.edu"
+          href={`mailto:${SOCIAL_LINKS.emailOfficial}`}
           className={`${link} normal-case tracking-widest`}
         >
-          eclecia@heritageit.edu
+          {SOCIAL_LINKS.emailOfficial}
         </a>
         <span className="hidden sm:inline text-gold/30">·</span>
         <span className="flex items-center gap-2">
-          <a href="tel:+919434883745" className={link}>
-            +91 94348 83745
+          <a href={`tel:${SOCIAL_LINKS.phonePrimary.replace(/\s/g, "")}`} className={link}>
+            {SOCIAL_LINKS.phonePrimary}
           </a>
-          <a href="tel:+918927734731" className={link}>
-            +91 89277 34731
+          <a href={`tel:${SOCIAL_LINKS.phoneSecondary.replace(/\s/g, "")}`} className={link}>
+            {SOCIAL_LINKS.phoneSecondary}
           </a>
         </span>
       </div>

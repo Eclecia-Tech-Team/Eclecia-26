@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { TransitionLink } from "./TransitionLink";
 
-type Props = {
+export type GoldButtonProps = {
   href: string;
   children: ReactNode;
   /** solid = filled gold (primary), ghost = hairline frame. */
@@ -18,9 +18,17 @@ type Props = {
  * finials at both points, echoing the divider ornament. Frame is SVG that
  * stretches with the label (non-scaling strokes keep lines crisp).
  */
-export function GoldButton({ href, children, variant = "solid", size = "md", className = "", onClick }: Props) {
+export function GoldButton({
+  href,
+  children,
+  variant = "solid",
+  size = "md",
+  className = "",
+  onClick,
+}: GoldButtonProps) {
   const solid = variant === "solid";
-  const pad = size === "sm" ? "px-7 py-2 text-[10px]" : "px-10 py-3.5 text-[12px]";
+  const pad =
+    size === "sm" ? "px-7 py-2 text-[10px]" : "px-10 py-3.5 text-[12px]";
   const finial = size === "sm" ? 14 : 18;
   return (
     <TransitionLink
@@ -97,11 +105,29 @@ export function GoldButton({ href, children, variant = "solid", size = "md", cla
 
 function Finial({ className, size }: { className: string; size: number }) {
   return (
-    <svg aria-hidden className={`gold-btn-finial pointer-events-none ${className}`} width={size} height={size} viewBox="0 0 24 24">
+    <svg
+      aria-hidden
+      className={`gold-btn-finial pointer-events-none ${className}`}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+    >
       {/* three-petal lotus bud pointing outward (left), with a dot */}
-      <path d="M12 3 C15 8 15 16 12 21 C9 16 9 8 12 3 Z" fill="#d9a441" opacity="0.95" />
-      <path d="M7 7 C11 10 11 14 7 17 C5 14 5 10 7 7 Z" fill="#d9a441" opacity="0.7" />
-      <path d="M17 7 C13 10 13 14 17 17 C19 14 19 10 17 7 Z" fill="#d9a441" opacity="0.7" />
+      <path
+        d="M12 3 C15 8 15 16 12 21 C9 16 9 8 12 3 Z"
+        fill="#d9a441"
+        opacity="0.95"
+      />
+      <path
+        d="M7 7 C11 10 11 14 7 17 C5 14 5 10 7 7 Z"
+        fill="#d9a441"
+        opacity="0.7"
+      />
+      <path
+        d="M17 7 C13 10 13 14 17 17 C19 14 19 10 17 7 Z"
+        fill="#d9a441"
+        opacity="0.7"
+      />
       <circle cx="3" cy="12" r="1.4" fill="#d9a441" />
     </svg>
   );

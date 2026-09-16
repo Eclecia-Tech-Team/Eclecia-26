@@ -16,20 +16,30 @@ bun run lint
 
 ```
 app/
-├─ page.tsx            landing: frame, layers, scroll hooks, panel placement
-├─ scene.config.ts     ★ the only file you normally edit: layouts, text, timings
-├─ track.ts            pose sampler (poseAt), easing helpers, sectionOpacity
-├─ sections.tsx        text panels (Hero/Stats/Events/Finale) + Overlay + halo
-├─ Header.tsx          shared header (Events · Sponsors · Register)
-├─ Footer.tsx          one-line footer + sponsorship heads / contact constants
-├─ ComingSoon.tsx      placeholder page component
-├─ sponsors/           /sponsors (SponsorsView.tsx is the client view)
-├─ events/, register/  coming-soon routes
-├─ layout.tsx          fonts (Cormorant Garamond, Geist, Geist Mono), metadata
-└─ globals.css         tokens (gold, parchment), text-panel shadow, overflow clip
-public/assets/opt/     served WebP assets
-assets-src/            original PNG/SVG sources (not served, keep out of public)
-scripts/optimize-assets.mjs   PNG → WebP pipeline (sharp)
+├─ layout.tsx              fonts, metadata, root layout
+├─ page.tsx                landing: frame, layers, scroll hooks, panel placement
+├─ events/, our-tale/      sub-routes
+├─ register/, schedule/    sub-routes
+├─ sponsors/, team/        sub-routes
+components/
+├─ common/                 Header, Footer, GoldButton, PageFade, TransitionLink, ComingSoon
+├─ home/                   Hero, Stats, Dates, Dusk, Finale sections + Overlay
+└─ sponsors/               SponsorsView client component
+constants/
+├─ assets.ts               Cloudinary & fallback public asset registry
+├─ scene.config.ts         ★ the only file you normally edit: layouts, text, timings
+└─ navigation.ts           NAV_ITEMS, SOCIAL_LINKS, SPONSORSHIP_HEADS
+lib/
+├─ cloudinary.ts           Cloudinary asset URL builder & transform helper
+└─ lqip.ts                 Low-Quality Image Placeholder (LQIP)
+utils/
+└─ track.ts                pose sampler (poseAt), easing helpers, sectionOpacity
+styles/
+└─ globals.css             tokens (gold, parchment), text-panel shadow, keyframes, theme
+public/assets/             local static WebP/PNG assets
+scripts/
+├─ optimize-assets.mjs     PNG → WebP pipeline (sharp)
+└─ upload-cloudinary.mjs   Batch uploader to sync public assets with Cloudinary
 ```
 
 ## Scene engine in one paragraph
