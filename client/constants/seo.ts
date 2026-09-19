@@ -100,7 +100,7 @@ export function getStructuredData(siteUrl: string = "") {
       sameAs: [
         "https://www.instagram.com/eclecia_hitk",
         "https://www.linkedin.com/in/eclecia-hitk-552642434",
-        "https://www.facebook.com/profile.php?id=61594092935345&sk=photos",
+        "https://www.facebook.com/share/1Ja64ScqBF/",
       ],
     },
     description:
@@ -155,7 +155,7 @@ export function getStructuredData(siteUrl: string = "") {
     sameAs: [
       "https://www.instagram.com/eclecia_hitk",
       "https://www.linkedin.com/in/eclecia-hitk-552642434",
-      "https://www.facebook.com/profile.php?id=61594092935345&sk=photos",
+      "https://www.facebook.com/share/1Ja64ScqBF/",
     ],
   };
 

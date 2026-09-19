@@ -37,7 +37,7 @@ export const TEAM_MAILTO = `mailto:${[
 export const SOCIAL_LINKS = {
   instagram: "https://www.instagram.com/eclecia_hitk",
   linkedin: "https://www.linkedin.com/in/eclecia-hitk-552642434",
-  facebook: "https://www.facebook.com/profile.php?id=61594092935345&sk=photos",
+  facebook: "https://www.facebook.com/share/1Ja64ScqBF/",
   websiteHitk: "https://heritageit.edu/",
   emailOfficial: "eclecia@heritageit.edu",
   phonePrimary: "+91 94348 83745",
