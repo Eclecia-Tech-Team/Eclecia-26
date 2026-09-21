@@ -42,4 +42,5 @@ export const SOCIAL_LINKS = {
   emailOfficial: "eclecia@heritageit.edu",
   phonePrimary: "+91 94348 83745",
   phoneSecondary: "+91 89277 34731",
+  phoneTertiary: "+91 83368 92188",
 } as const;
