@@ -194,7 +194,7 @@ export function HeroSection({ opacity, emerge, rect, bounds, compact, scale }: S
             compact ? "text-[10px]" : "text-[13px]"
           }`}
         >
-          Heritage Institute of Technology, Kolkata
+          Students of Heritage Institute of Technology, Kolkata
         </p>
         <p
           className={`font-display italic leading-none text-parchment/80 ${compact ? "text-[16px]" : "text-[22px]"}`}
