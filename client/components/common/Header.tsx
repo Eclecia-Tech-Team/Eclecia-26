@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
@@ -65,7 +66,6 @@ export function SiteHeader({ opacity = 1 }: SiteHeaderProps) {
             title="Heritage Institute of Technology, Kolkata"
             className="flex items-center"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={ASSETS.cloudinary.hitkLogo}
               alt="HITK Logo"
@@ -77,7 +77,6 @@ export function SiteHeader({ opacity = 1 }: SiteHeaderProps) {
 
           {/* Eclecia Symbol Logo */}
           <TransitionLink href="/" className="flex items-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={ASSETS.cloudinary.ecleciaLogo}
               alt="Eclecia Logo"
@@ -85,17 +84,16 @@ export function SiteHeader({ opacity = 1 }: SiteHeaderProps) {
             />
           </TransitionLink>
 
-          <span className="h-6 w-px bg-gold/30 md:h-7" aria-hidden />
+          {/* <span className="h-6 w-px bg-gold/30 md:h-7" aria-hidden /> */}
 
           {/* IIC Rectangular Logo */}
-          <TransitionLink href="/" className="flex items-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+          {/* <TransitionLink href="/" className="flex items-center">
             <img
               src={ASSETS.cloudinary.iicLogo}
               alt="IIC Logo"
               className="h-7.5 w-auto max-w-24 object-contain opacity-90 sm:h-8.5 sm:max-w-28 md:h-11 md:max-w-40"
             />
-          </TransitionLink>
+          </TransitionLink> */}
         </div>
 
         {/* Center: Desktop Navigation Links */}
